@@ -5,6 +5,7 @@ package main
 
 import "fmt"
 import "net/http"
+import "io/ioutil"
 
 func main() {
 	fmt.Println("Hello, World!")
@@ -15,10 +16,18 @@ func main() {
 //	}
 //	client := &http.Client{Transport: transport}
 	response, err := http.Get("https://httpbin.org/get")
-	fmt.Println(response.Body)
 	if err != nil {
 		fmt.Println("there was an error :( :")
 		fmt.Println(err)
+	}
+	defer response.Body.Close()
+	if response.StatusCode == 200 {
+		bodyBytes, err2 := ioutil.ReadAll(response.Body)
+		bodyString := string(bodyBytes)
+		fmt.Println(bodyString)
+		if err2 != nil {
+			fmt.Println("oh god")
+		}
 	}
 }
 
