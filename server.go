@@ -61,6 +61,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "Fuck you "+m.Author.Username)
 	}
 
+	if m.Content == "!embed" {
+		image := &discordgo.MessageEmbedImage{URL: "https://maps.googleapis.com/maps/api/staticmap?center=CollegeStation,TX&zoom=14&size=400x400"}
+		s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{Title: "embeded message test", Color: 1000, Image: image})
+
+	}
+
 	if m.Content == "!track" {
 		if Status == false {
 			messageChannel(s, m.ChannelID, "Now trackning the aggie1 with aprs.fi")
