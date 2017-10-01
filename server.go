@@ -61,16 +61,18 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if m.Content == "!help" {
-		msg := "There are 5 commands for this bot. [!help, !embed, !starttrack, !track, !stoptrack]\n !starttrack: starts the tracking system currently starting tracking does nothing\n!track: prints the map of the location of the bot\n!stoptrack: stops tracking"
+		msg := "There are 4 commands for this bot. [!help, !starttrack, !track, !stoptrack]\n !starttrack <APRS Callsign>: starts the tracking system and tells it what to track.\n!track: prints the map of the location of the bot\n!stoptrack: stops tracking"
 		s.ChannelMessageSend(m.ChannelID, "Hi "+m.Author.Username)
 		s.ChannelMessageSend(m.ChannelID, msg)
 
 	}
 
-	if m.Content == "!embed" {
-		image := &discordgo.MessageEmbedImage{URL: "https://maps.googleapis.com/maps/api/staticmap?center=30.61950,-96.33933&zoom=15&size=1000x1000&maptype=satellite&key=AIzaSyDLjIV_Io8-QWuMbbRnkR3GQvvtZcFdGZY&markers=blue|30.61950,-96.33933"}
-		s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{Title: "embeded message test", Color: 1000, Image: image})
-	}
+	/*
+		if m.Content == "!embed" {
+			image := &discordgo.MessageEmbedImage{URL: "https://maps.googleapis.com/maps/api/staticmap?center=30.61950,-96.33933&zoom=15&size=1000x1000&maptype=satellite&key=AIzaSyDLjIV_Io8-QWuMbbRnkR3GQvvtZcFdGZY&markers=blue|30.61950,-96.33933"}
+			s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{Title: "embeded message test", Color: 1000, Image: image})
+		}
+	*/
 
 	if strings.HasPrefix(m.Content, "!starttrack") {
 		if Status == false {
@@ -133,9 +135,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				lat, err3 := jsonparser.GetString(bodyBytes, "entries", "[0]", "lat")
 				lng, err4 := jsonparser.GetString(bodyBytes, "entries", "[0]", "lng")
 				name, err5 := jsonparser.GetString(bodyBytes, "entries", "[0]", "name")
+				alt, err6 := jsonparser.GetString(bodyBytes, "entries", "[0]", "altitude")
 				image := &discordgo.MessageEmbedImage{URL: "https://maps.googleapis.com/maps/api/staticmap?center=" + lat + "," + lng + "&zoom=15&size=1000x1000&maptype=satellite&key=AIzaSyDLjIV_Io8-QWuMbbRnkR3GQvvtZcFdGZY&markers=blue|" + lat + "," + lng}
-				s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{URL: "https://www.google.com/maps/search/48.96550,2.24217", Title: "Current location of " + name + "(Click this for google maps directions)", Color: 1000, Image: image})
-				if err2 != nil || err3 != nil || err4 != nil || err5 != nil {
+				s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{URL: "https://www.google.com/maps/search/" + lat + "," + lng, Title: "Current location of " + name + "(Click this for google maps directions)", Description: "The balloon has an altitude of " + alt + " meters", Color: 1000, Image: image})
+				if err2 != nil || err3 != nil || err4 != nil || err5 != nil || err6 != nil {
 					fmt.Println("oh god")
 				}
 			} else {
